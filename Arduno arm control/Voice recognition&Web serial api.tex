@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <title> voice recognition </title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+
+</head>
+
+<body style=" background-color: #bdbdbd" ;>
+
+
+
+
+    <div class="container">
+
+        <h1 class="text-center mt-5" style="color:#5d4037;">
+
+            <i>Speech to Text </i>
+        </h1>
+
+        <div class="form-group">
+
+            <textarea id="textbox" rows="8" ; dir="rtl" class="form-control"> </textarea>
+
+
+        </div>
+
+        <div class="form-group">
+
+            <button id="start-btn" class="btn btn-danger btn-block" style=" background-color: #e57373" ;>
+
+                Start
+
+            </button>
+
+            <p id="instructions"> <u>Press the Start button </u></p>
+			
+			
+			
+
+        </div>
+		<div>
+	
+	<div class="serial-scale-div">
+        <button  class="btn" id="connect-to-serial" tyle=" background-color: #e57373"; > <p><u>Connect with Serial Device</u></p>
+
+           
+
+		</button>
+  </div>
+		
+		
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script src="script.js"></script>
+	
+	
+	
+<script>
+    "use strict";
+    class SerialScaleController {
+        constructor() {
+            this.encoder = new TextEncoder();
+
+        }
+        async init() {
+            if ('serial' in navigator) {
+                try {
+                    const port = await navigator.serial.requestPort();
+                    await port.open({ baudRate: 9600 });
+                    this.reader = port.readable.getReader();
+                    let signals = await port.getSignals();
+                    console.log(signals);
+                }
+                catch (err) {
+                    console.error('There was an error opening the serial port:', err);
+                }
+            }
+            else {
+                console.error('Web serial doesn\'t seem to be enabled in your browser. Try enabling it by visiting:');
+    
+                console.error('opera://flags/#enable-experimental-web-platform-features');
+                console.error('edge://flags/#enable-experimental-web-platform-features');
+            }
+        }
+        async read() {
+            try {
+                const readerData = await this.reader.read();
+                console.log(readerData)
+                return this.decoder.decode(readerData.value);
+            }
+            catch (err) {
+                const errorMessage = `error reading data: ${err}`;
+                console.error(errorMessage);
+                return errorMessage;
+            }
+        }
+    }
+
+    const serialScaleController = new SerialScaleController();
+    const connect = document.getElementById('connect-to-serial');
+   
+
+    connect.addEventListener('pointerdown', () => {
+      serialScaleController.init();
+    });
+
+  
+
+  </script>
+
+
+
+	</div>
+	
+
+	
+
+</body>
+
+</html>
